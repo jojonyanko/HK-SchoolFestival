@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学園祭・リアルタイム暗号通信</title>
+    <style>
+        body {
+            background-color: #0a0a0a;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .container {
+            border: 2px solid #00ff00;
+            padding: 40px;
+            display: inline-block;
+            border-radius: 10px;
+            min-width: 320px;
+            max-width: 90%;
+            background-color: #111;
+            box-sizing: border-box;
+        }
+        input[type="text"] {
+            background-color: #000;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            font-size: 24px;
+            padding: 10px;
+            width: 90%;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        #display-area {
+            font-size: 48px;
+            min-height: 80px;
+            letter-spacing: 5px;
+            text-shadow: 0 0 10px #00ff00;
+            word-wrap: break-word;
+        }
+        .mode-switch {
+            margin-bottom: 30px;
+        }
+        button {
+            background-color: #003300;
+            color: #00ff00;
+            border: 1px solid #00ff00;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #005500;
+        }
+    </style>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+</head>
+<body>
+
+    <h1>-- 暗号通信システム --</h1>
+
+    <div class="mode-switch" id="mode-selection">
+        <button onclick="setMode('input')">入力用タブレットにする</button>
+        <button onclick="setMode('display')">表示用タブレットにする</button>
+    </div>
+
+    <div class="container" id="input-container" style="display:none;">
+        <h2>【入力モード】</h2>
+        <p>暗号を入力せよ：</p>
+        <input type="text" id="secret-input" placeholder="ここに入力..." onkeyup="sendData()">
+    </div>
+
+    <div class="container" id="display-container" style="display:none;">
+        <h2>【モニターモード】</h2>
+        <p>受信データ：</p>
+        <div id="display-area">受信待機中...</div>
+    </div>
+
+    <script>
+        // ★★★ Firebaseの設定情報をここに貼り付けてください ★★★
+        const firebaseConfig = {
+            apiKey: "AIzaSyBPFyTzjPPI1MASaGH7m814Pq3nHSo6BIA",
+              authDomain: "hk-schoolfestival.firebaseapp.com",
+              projectId: "hk-schoolfestival",
+              storageBucket: "hk-schoolfestival.firebasestorage.app",
+              messagingSenderId: "890932163893",
+              appId: "1:890932163893:web:949645020f83cb98e9c87c"
+        };
+
+        // Firebaseの初期化
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // モード切替
+        function setMode(mode) {
+            document.getElementById('mode-selection').style.display = 'none';
+
+            if (mode === 'input') {
+                document.getElementById('input-container').style.display = 'block';
+                database.ref('secretCode').set(''); // 初期化
+            } else {
+                document.getElementById('display-container').style.display = 'block';
+                // データベースの変更をリアルタイム監視する処理
+                database.ref('secretCode').on('value', function(snapshot) {
+                    document.getElementById('display-area').innerText = snapshot.val() || '';
+                });
+            }
+        }
+
+        // データをインターネット上のデータベースへ送信
+        function sendData() {
+            const text = document.getElementById('secret-input').value;
+            database.ref('secretCode').set(text);
+        }
+    </script>
+</body>
+</html>
