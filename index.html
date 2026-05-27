@@ -157,7 +157,7 @@
             const text = document.getElementById('secret-input').value;
             const inputResult = document.getElementById('inputResult');
             if (text == "243285" || text == ""){
-                inputResult.style.display = 'block'
+                inputResult.style.display = 'none'
             // 自分のペア番号の場所だけにデータを書き込む
                 database.ref('pairs/' + pairNumber).set({
                     secretCode: text
