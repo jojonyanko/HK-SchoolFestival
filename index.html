@@ -169,8 +169,9 @@
                 // そのペアのデータだけをリアルタイム監視
                 pairRef.on('value', function(snapshot) {
                     const data = snapshot.val();
+                    const currentText = (data && data.secretCode) ? data.secretCode : '';
                     document.getElementById('display-area').innerText = (data && data.secretCode) ? data.secretCode : '';
-
+                    
                     if (currentText && currentText !== lastText) {
                         playBeepSound();
                     }
