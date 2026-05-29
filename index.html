@@ -124,18 +124,32 @@
             try {
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
                 const audioCtx = new AudioContext();
-                const oscillator = audioCtx.createOscillator();
-                const gainNode = audioCtx.createGain();
+                
+                // 1音目（ポ）: 少し低めの音を短く
+                const osc1 = audioCtx.createOscillator();
+                const gain1 = audioCtx.createGain();
+                osc1.type = 'sine';
+                osc1.frequency.setValueAtTime(950, audioCtx.currentTime); 
+                gain1.gain.setValueAtTime(0.04, audioCtx.currentTime);
+                // 0.08秒で滑らかに音量をゼロにする
+                gain1.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.08);
+                osc1.connect(gain1);
+                gain1.connect(audioCtx.destination);
+                osc1.start();
+                osc1.stop(audioCtx.currentTime + 0.08);
 
-                oscillator.type = 'sine'; // 音の種類（sine: 正弦波でクリアな音）
-                oscillator.frequency.setValueAtTime(1200, audioCtx.currentTime); // 音の高さ（Hz）
-                gainNode.gain.setValueAtTime(0.05, audioCtx.currentTime); // 音量（0.05くらいが適量）
-
-                oscillator.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
-
-                oscillator.start();
-                oscillator.stop(audioCtx.currentTime + 0.08); // 0.08秒だけ鳴らす
+                // 2音目（ローン）: 0.06秒後に、1音目より高い音を余韻を残して鳴らす
+                const osc2 = audioCtx.createOscillator();
+                const gain2 = audioCtx.createGain();
+                osc2.type = 'sine';
+                osc2.frequency.setValueAtTime(1250, audioCtx.currentTime + 0.06); 
+                gain2.gain.setValueAtTime(0.04, audioCtx.currentTime + 0.06);
+                // 0.4秒かけて綺麗にフェードアウト（消えていく余韻を作る）
+                gain2.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.4);
+                osc2.connect(gain2);
+                gain2.connect(audioCtx.destination);
+                osc2.start(audioCtx.currentTime + 0.06);
+                osc2.stop(audioCtx.currentTime + 0.4);
             } catch (e) {
                 console.log("オーディオ再生エラー:", e);
             }
