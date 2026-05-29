@@ -122,7 +122,12 @@
         let pairNumber = "";
         let lastText = "";
 
+        let audioCtx;
+
         function playBeepSound() {
+
+            if (!audioCtx) return;
+            
             try {
                 const AudioContext = window.AudioContext || window.webkitAudioContext;
                 const audioCtx = new AudioContext();
@@ -168,6 +173,14 @@
                 return;
             }
 
+            if (!audioCtx){
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext()
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume()
+            }
+
             // 選択画面を隠す
             document.getElementById('mode-selection').style.display = 'none';
 
@@ -211,6 +224,7 @@
                     inputResult.style.color = "green"
                     inputResult.style.display = "block"
                     inputResult.textContent = "送信成功"
+                    document.getElementById('secret-input').value = "";
                 }
             } else {
                 inputResult.style.color = "red"
