@@ -89,9 +89,11 @@
         <!-- <input type="text" id="secret-input" placeholder="ここに入力..." onkeyup="sendData()"> -->
         <input type="text" id="secret-input" placeholder="ここに入力...">
         <button onclick="sendData()">送信</button>
-        <font color="red" size="5">
-            <span id="inputResult"></span>
-        </font>
+        
+        <!-- <font color="red" size="5"> -->
+        <span id="inputResult"></span>
+        <!-- </font> -->
+        
     </div>
 
     <div class="container" id="display-container" style="display:none;">
@@ -199,12 +201,18 @@
             const text = document.getElementById('secret-input').value;
             const inputResult = document.getElementById('inputResult');
             if (text == "924" || text == ""){
-                inputResult.style.display = 'none'
             // 自分のペア番号の場所だけにデータを書き込む
                 database.ref('pairs/' + pairNumber).set({
                     secretCode: text
                 });
+                if (text == ""){
+                    inputResult.style.display = 'none'
+                } else {
+                    inputResult.style.color = "green"
+                    inputResult.style.display = "block"
+                    inputResult.textContent = "送信成功"
             } else {
+                inputResult.style.color = "red"
                 inputResult.style.display = 'block'
                 inputResult.textContent = "入力値が間違っています"
             }
